@@ -29,6 +29,17 @@ const SimulationPanel: React.FC = () => {
     setReport(res);
   };
 
+  const downloadReport = () => {
+    if (!report) return;
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `phase1_artifact_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
     solverRef.current.closureType = closureType;
   }, [closureType]);
@@ -143,37 +154,52 @@ const SimulationPanel: React.FC = () => {
           </div>
         </div>
 
-        {/* Energy Budget Plot */}
+        {/* Reproduction Detail Panel */}
         <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-5 flex flex-col relative overflow-hidden">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-            Energy Budget [W_E]
-          </h3>
-          <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} opacity={0.3} />
-                <XAxis dataKey="time" hide />
-                <YAxis scale="log" domain={['auto', 'auto']} stroke="#475569" fontSize={9} />
-                <Tooltip contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #334155' }} />
-                <Area type="monotone" dataKey="energy" stroke="#10b981" fill="#10b981" fillOpacity={0.1} isAnimationActive={false} />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <ICONS.Terminal /> Quantitative Results
+            </h3>
           </div>
-          {report && (
-            <div className="absolute inset-0 bg-slate-950/95 p-4 flex flex-col z-20 overflow-y-auto">
-               <div className="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                  <h4 className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Verification Report</h4>
-                  <button onClick={() => setReport(null)} className="text-slate-500 hover:text-white">✕</button>
-               </div>
-               <pre className="text-[9px] font-mono text-emerald-400 leading-tight">
-                 {JSON.stringify(report, null, 2)}
-               </pre>
-               <div className="mt-4 p-2 bg-indigo-500/10 border border-indigo-500/20 rounded text-[9px] text-indigo-300">
-                 Reproduction verified. Copy JSON for archival.
-               </div>
-            </div>
-          )}
+          
+          <div className="flex-1 overflow-y-auto space-y-4">
+            {report ? (
+              <div className="space-y-4">
+                <table className="w-full text-[10px] text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-800">
+                      <th className="py-2 text-slate-500">Model</th>
+                      <th className="py-2 text-slate-500">Gamma</th>
+                      <th className="py-2 text-slate-500">Error</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {report.metrics_table.map((row: any, i: number) => (
+                      <tr key={i} className="border-b border-slate-900">
+                        <td className="py-2 font-bold text-slate-300">{row.Model}</td>
+                        <td className="py-2 font-mono text-indigo-400">{row.Gamma}</td>
+                        <td className="py-2 font-mono text-emerald-500">{row.RelError}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="p-3 bg-slate-950 rounded border border-slate-800">
+                  <div className="text-[9px] text-slate-500 uppercase font-bold mb-1">Recurrence Suppression</div>
+                  <div className="text-sm font-bold text-amber-500">{report.stability.recurrence_suppression_db} dB</div>
+                </div>
+                <button 
+                  onClick={downloadReport}
+                  className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-[10px] font-bold uppercase tracking-widest"
+                >
+                  Download Scientific JSON
+                </button>
+              </div>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-slate-500 italic text-[10px] text-center px-4">
+                Run benchmark to populate quantitative artifact table.
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
