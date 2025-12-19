@@ -3,7 +3,7 @@
 
 **Project:** PlasmaMind-LD  
 **Tag:** `phase1-final`  
-**Status:** FROZEN  
+**Status:** FROZEN (Date: 2024-05-20)
 
 ## Frozen Methodology
 1.  **Dimensionality:** Strictly 1D-1V Electrostatic.
@@ -17,4 +17,6 @@
 - Introduction of Symplectic Splitting (Phase 2).
 - Modification of $M=8$ truncation depth.
 
-Any deviations must be committed to the `phase-2-em-scaling` branch.
+---
+**NOTICE:** All development has now moved to the `phase-2-em-scaling` branch. 
+The files `physics/vlasovEngine.ts` and `experiments/phase1_benchmark.ts` are strictly for verification of the electrostatic proof-of-concept.

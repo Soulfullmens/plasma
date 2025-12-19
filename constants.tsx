@@ -2,12 +2,16 @@
 import React from 'react';
 
 export const ROADMAP_DATA = [
-  { id: '1.1.1', phase: 'Phase 1.1', title: 'Basis Implementation', status: 'completed', description: 'Recursive generation of Hermite basis functions and interaction matrices.' },
-  { id: '1.1.2', phase: 'Phase 1.1', title: 'RK4 Solver Construction', status: 'completed', description: 'Explicit RK4 time-stepper using Method of Lines.' },
-  { id: '1.1.3', phase: 'Phase 1.1', title: 'Linear Landau Validation', status: 'in-progress', description: 'Benchmarking gamma against analytic dispersion relation.' },
-  { id: '1.2.1', phase: 'Phase 1.2', title: 'Data Factory Sampling', status: 'pending', description: 'Generation of training corpus using Truth Solver (M=128).' },
-  { id: '1.3.1', phase: 'Phase 1.3', title: 'MLP Closure Training', status: 'pending', description: 'Training local spectral-space MLP for f_{M+1}.' },
-  { id: '1.4.1', phase: 'Phase 1.4', title: 'Hybrid Online Integration', status: 'pending', description: 'Replacing truncation with neural closure in RK4 loop.' }
+  // Phase 1: LOCKED
+  { id: '1.1.1', phase: 'Phase 1: Electrostatic', title: 'Basis Implementation', status: 'completed', description: 'Recursive generation of Hermite basis functions and interaction matrices.' },
+  { id: '1.1.2', phase: 'Phase 1: Electrostatic', title: 'RK4 Solver Construction', status: 'completed', description: 'Explicit RK4 time-stepper using Method of Lines.' },
+  { id: '1.1.3', phase: 'Phase 1: Electrostatic', title: 'Linear Landau Validation', status: 'completed', description: 'Benchmarking gamma against analytic dispersion relation.' },
+  { id: '1.4.1', phase: 'Phase 1: Electrostatic', title: 'Hybrid Online Integration', status: 'completed', description: 'Replacing truncation with neural closure in RK4 loop.' },
+  
+  // Phase 2: ACTIVE
+  { id: '2.1.1', phase: 'Phase 2: EM Scaling', title: 'EM Interaction Tensors', status: 'in-progress', description: 'Deriving the coupling between longitudinal and transverse Hermite moments.' },
+  { id: '2.2.1', phase: 'Phase 2: EM Scaling', title: 'Transverse Wave Solver', status: 'pending', description: 'Integrating Maxwell equations into the spectral hierarchy.' },
+  { id: '2.3.1', phase: 'Phase 2: EM Scaling', title: 'Multi-GPU JAX Scaling', status: 'pending', description: 'Porting the closure MLP to distributed vmap for 3D-3V scaling.' }
 ];
 
 export const ICONS = {
