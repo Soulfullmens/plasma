@@ -1,0 +1,5 @@
+{
+  "name": "PlasmaMind-LD Phase 1 Dashboard",
+  "description": "A high-fidelity research dashboard and simulation environment for 1D-1V Vlasov-Poisson plasma physics with neural closure benchmarking.",
+  "requestFramePermissions": []
+}
