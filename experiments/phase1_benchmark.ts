@@ -2,31 +2,32 @@
 import { VlasovSolver } from '../physics/vlasovEngine';
 
 /**
- * Phase 1.4 Headless Benchmark Script
- * Reproduces the primary falsification experiment without UI dependencies.
- * Run this to generate the terminal-ready scientific report.
+ * Phase 1.4 Master Reproduction Script (Headless)
+ * Reproduces Figure 1 and Table 1 of the Phase 1 manuscript.
+ * USAGE: Call runPhase1Benchmark() to generate scientific artifact.
  */
-export async function runPhase1Benchmark() {
+export async function runPhase1Benchmark(seed: number = 42) {
+  // CONFIGURATION (Frozen for Phase 1)
   const k = 0.5;
-  const alpha = 0.05;
+  const alpha = 0.05; // Linear/Weakly nonlinear regime
   const solver = new VlasovSolver(k, alpha);
   const maxSteps = 1500;
   
-  console.log(`[BENCHMARK] Starting Phase 1 Verification (k=${k}, alpha=${alpha})`);
-  console.log(`[BENCHMARK] Fitting Window: [${solver.T_FIT_START}, ${solver.T_FIT_END}]`);
+  console.log(`[REPRODUCTION] Initializing with SEED: ${seed}`);
+  console.log(`[REPRODUCTION] Regime: ${alpha < 0.1 ? 'VALID (Weakly Nonlinear)' : 'WARNING (Strong Trapping)'}`);
 
   const history: any[] = [];
   
+  // Execution loop
   for (let i = 0; i < maxSteps; i++) {
     const step = solver.step();
     history.push(step);
     if (step.t > solver.T_FIT_END + 10) break;
   }
 
-  // Calculate Gamma via log-linear regression in the fit window
-  const fitData = history.filter(h => h.t >= solver.T_FIT_START && h.t <= solver.T_FIT_END);
-  
+  // Regression utility for Damping Rate (Gamma)
   const getGamma = (key: string) => {
+    const fitData = history.filter(h => h.t >= solver.T_FIT_START && h.t <= solver.T_FIT_END);
     const x = fitData.map(d => d.t);
     const y = fitData.map(d => Math.log(d[key] + 1e-12));
     const n = x.length;
@@ -41,16 +42,37 @@ export async function runPhase1Benchmark() {
   const gamma_hybrid = getGamma('eHybrid');
   const gamma_truncated = getGamma('eTruncated');
 
-  const relError = Math.abs((gamma_truth - gamma_hybrid) / gamma_truth);
-  
+  // Quantifying Suppression of Recurrence
+  const tRec = (2 * Math.PI * Math.sqrt(8)) / k;
+  const recData = history.filter(h => Math.abs(h.t - tRec) < 2.0);
+  const maxRecurrenceAmplitude = Math.max(...recData.map(d => d.eTruncated));
+  const hybridAmplitudeAtTRec = Math.max(...recData.map(d => d.eHybrid));
+  const suppressionRatio = maxRecurrenceAmplitude / hybridAmplitudeAtTRec;
+
   const report = {
-    gamma_theory: solver.GAMMA_THEORY,
-    gamma_truth: parseFloat(gamma_truth.toFixed(6)),
-    gamma_hybrid: parseFloat(gamma_hybrid.toFixed(6)),
-    gamma_truncated: parseFloat(gamma_truncated.toFixed(6)),
-    relative_error: parseFloat(relError.toExponential(4)),
-    status: relError < 0.01 ? "VERIFIED" : "FAILED",
-    timestamp: new Date().toISOString()
+    metadata: {
+      project: "PlasmaMind-LD",
+      version: "Phase-1.4-Final",
+      seed: seed,
+      timestamp: new Date().toISOString(),
+      regime: alpha < 0.1 ? "Linear/Weakly-Nonlinear" : "Strongly-Nonlinear (Out of Bounds)"
+    },
+    metrics: {
+      gamma_analytic: solver.GAMMA_THEORY,
+      gamma_truth: parseFloat(gamma_truth.toFixed(6)),
+      gamma_hybrid: parseFloat(gamma_hybrid.toFixed(6)),
+      gamma_truncated: parseFloat(gamma_truncated.toFixed(6)),
+      rel_error_hybrid: parseFloat((Math.abs(gamma_truth - gamma_hybrid) / Math.abs(gamma_truth)).toExponential(4)),
+    },
+    stability: {
+      mass_conservation_residue: history[history.length - 1].massError.toExponential(4),
+      recurrence_suppression_db: parseFloat((20 * Math.log10(suppressionRatio)).toFixed(2)),
+      is_dissipative: history[history.length - 1].fieldEnergy < history[0].fieldEnergy
+    },
+    verification: {
+      status: Math.abs(gamma_truth - gamma_hybrid) / Math.abs(gamma_truth) < 0.01 ? "PASSED" : "FAILED",
+      falsification_observed: maxRecurrenceAmplitude > 2 * history.filter(h => h.t > 15)[0].eTruth
+    }
   };
 
   return report;

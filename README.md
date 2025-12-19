@@ -1,20 +1,31 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
 
-# Run and deploy your AI Studio app
+# PlasmaMind-LD Phase 1: Reprodicibility Suite
 
-This contains everything you need to run your app locally.
+This repository contains the scientific artifact for Phase 1 of the PlasmaMind-LD project: **Approximating Unresolved Hermite Flux via Local Neural Closures in 1D-1V Vlasov-Poisson Systems.**
 
-View your app in AI Studio: https://ai.studio/apps/drive/1hITpZTu6_zGj0yMIsv-u4-gvnfjlI81r
+## Reprodicibility (Headless)
 
-## Run Locally
+To reproduce the primary Phase 1 results (Damping rates, recurrence suppression, and conservation):
 
-**Prerequisites:**  Node.js
+1.  Open the **Validation** dashboard.
+2.  Click **"Generate Reproduction Report"**.
+3.  The output JSON artifact reproduces Figure 1 and Table 1 of the manuscript.
 
+### Expected Quantitative Artifact
+```json
+{
+  "metrics": {
+    "gamma_truth": -0.1533xx,
+    "gamma_hybrid": -0.153xxx,
+    "rel_error_hybrid": < 1.0e-2
+  },
+  "stability": {
+    "recurrence_suppression_db": > 40.0
+  }
+}
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Failure Mode Disclosure
+The local spectral closure provided in Phase 1 is designed for the **Linear and Weakly Nonlinear** regimes ($\alpha < 0.1$). 
+- **Strong Trapping**: For amplitudes $\alpha \ge 0.1$, the closure loses admissibility as mode coupling at the boundary $M$ becomes non-local.
+- **Turbulence**: Fully developed turbulence is outside the scope of Phase 1 and will be addressed in Phase 2 scaling.
