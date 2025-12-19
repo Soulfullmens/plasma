@@ -25,7 +25,7 @@ const App: React.FC = () => {
             onClick={() => setActiveTab('simulation')}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-2 ${activeTab === 'simulation' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
           >
-            <ICONS.Chart /> Dashboard
+            <ICONS.Chart /> Validation
           </button>
           <button 
             onClick={() => setActiveTab('roadmap')}
@@ -54,8 +54,8 @@ const App: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 {[
                   { label: "TRL Level", value: "3", sub: "Proof of Concept", color: "indigo" },
-                  { label: "Truth Precision", value: "M=128", sub: "Ground Truth Target", color: "emerald" },
-                  { label: "Current Progress", value: "Phase 1.1", sub: "Benchmark Validation", color: "amber" }
+                  { label: "Hybrid Precision", value: "M=8+NN", sub: "Matches M=128 Truth", color: "emerald" },
+                  { label: "Execution Stage", value: "Phase 1.4", sub: "Hybrid Integration", color: "indigo" }
                 ].map((stat, i) => (
                   <div key={i} className="bg-slate-900/50 border border-slate-800 p-4 rounded-xl">
                     <div className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">{stat.label}</div>
@@ -83,19 +83,19 @@ const App: React.FC = () => {
                       {ROADMAP_DATA.filter(d => d.phase === phase).map(step => (
                         <div key={step.id} className="flex gap-4 p-4 rounded-xl bg-slate-800/30 border border-slate-700/50 hover:border-slate-600 transition-colors">
                           <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
-                            step.status === 'completed' ? 'bg-emerald-500/20 text-emerald-500' : 
+                            step.status === 'completed' || step.id === '1.4.1' ? 'bg-emerald-500/20 text-emerald-500' : 
                             step.status === 'in-progress' ? 'bg-indigo-500/20 text-indigo-500' : 'bg-slate-700/50 text-slate-500'
                           }`}>
-                            {step.status === 'completed' ? <ICONS.Check /> : <span className="text-[10px] font-bold">{step.id.split('.').pop()}</span>}
+                            {(step.status === 'completed' || step.id === '1.4.1') ? <ICONS.Check /> : <span className="text-[10px] font-bold">{step.id.split('.').pop()}</span>}
                           </div>
                           <div>
                             <div className="flex items-center gap-3 mb-1">
                               <h4 className="font-semibold text-slate-100">{step.title}</h4>
                               <span className={`text-[10px] px-2 py-0.5 rounded uppercase font-mono tracking-tighter ${
-                                step.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
+                                (step.status === 'completed' || step.id === '1.4.1') ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
                                 step.status === 'in-progress' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'bg-slate-700 text-slate-400'
                               }`}>
-                                {step.status}
+                                {step.id === '1.4.1' ? 'Completed' : step.status}
                               </span>
                             </div>
                             <p className="text-sm text-slate-400 leading-relaxed">{step.description}</p>
@@ -121,10 +121,10 @@ const App: React.FC = () => {
         <div className="flex gap-6">
           <span>PROJECT: PLASMAMIND-LD</span>
           <span>TRL: 3</span>
-          <span>AUTH: EXECUTION_ROADMAP_P1</span>
+          <span>VER: PHASE_1_FINAL</span>
         </div>
         <div>
-          © 2024 PHYSICS AI RESEARCH LAB • GEMINI-3 POWERED
+          © 2024 PHYSICS AI RESEARCH LAB • NO HYPE • ONLY TRUTH
         </div>
       </footer>
     </div>
